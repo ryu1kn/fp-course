@@ -58,8 +58,8 @@ bindOptional f (Full x) = f x
   Optional a
   -> a
   -> a
-(??) =
-  error "todo: Course.Optional#(??)"
+(??) Empty x    = x
+(??) (Full x) _ = x
 
 -- | Try the first optional for a value. If it has a value, use it; otherwise,
 -- use the second value.
