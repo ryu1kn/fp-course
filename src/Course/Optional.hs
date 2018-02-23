@@ -79,8 +79,9 @@ bindOptional f (Full x) = f x
   Optional a
   -> Optional a
   -> Optional a
-(<+>) =
-  error "todo: Course.Optional#(<+>)"
+(<+>) (Full x) _ = Full x
+(<+>) Empty (Full x) = Full x
+(<+>) _ _ = Empty
 
 -- | Replaces the Full and Empty constructors in an optional.
 --
