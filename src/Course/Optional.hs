@@ -58,8 +58,8 @@ bindOptional f (Full x) = f x
   Optional a
   -> a
   -> a
-(??) Empty x    = x
-(??) (Full x) _ = x
+Empty ?? x  = x
+Full x ?? _ = x
 
 -- | Try the first optional for a value. If it has a value, use it; otherwise,
 -- use the second value.
@@ -79,9 +79,8 @@ bindOptional f (Full x) = f x
   Optional a
   -> Optional a
   -> Optional a
-(<+>) (Full x) _ = Full x
-(<+>) Empty (Full x) = Full x
-(<+>) _ _ = Empty
+Empty <+> x = x
+Full x <+> _ = Full x
 
 -- | Replaces the Full and Empty constructors in an optional.
 --
@@ -99,7 +98,7 @@ optional =
   error "todo: Course.Optional#optional"
 
 applyOptional :: Optional (a -> b) -> Optional a -> Optional b
-applyOptional f a = bindOptional (\f' -> mapOptional f' a) f
+applyOptional f a = bindOptional (\f' -> mapOptional (\a' -> f' a') a) f
 
 twiceOptional :: (a -> b -> c) -> Optional a -> Optional b -> Optional c
 twiceOptional f = applyOptional . mapOptional f
