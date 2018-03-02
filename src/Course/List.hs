@@ -1,7 +1,7 @@
-{-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE FlexibleInstances   #-}
+{-# LANGUAGE NoImplicitPrelude   #-}
+{-# LANGUAGE OverloadedStrings   #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE FlexibleInstances #-}
 
 -- + Complete the 10 exercises below by filling out the function bodies.
 --   Replace the function bodies (error "todo: ...") with an appropriate
@@ -14,12 +14,12 @@
 module Course.List where
 
 import qualified Control.Applicative as A
-import qualified Control.Monad as M
-import Course.Core
-import Course.Optional
-import qualified System.Environment as E
-import qualified Prelude as P
-import qualified Numeric as N
+import qualified Control.Monad       as M
+import           Course.Core
+import           Course.Optional
+import qualified Numeric             as N
+import qualified Prelude             as P
+import qualified System.Environment  as E
 
 
 -- $setup
@@ -75,8 +75,7 @@ headOr ::
   a
   -> List a
   -> a
-headOr _ (h :. _) = h
-headOr d _ = d
+headOr = foldRight const
 
 -- | The product of the elements of a list.
 --
@@ -116,7 +115,7 @@ sum = foldLeft (+) 0
 length ::
   List a
   -> Int
-length = foldLeft (\x _ -> x + 1) 0
+length = foldLeft (const . P.succ) 0
 
 -- | Map the given function on each element of the list.
 --
@@ -130,8 +129,7 @@ map ::
   (a -> b)
   -> List a
   -> List b
-map _ Nil = Nil
-map f (a :. list) = f a :. map f list
+map f = foldRight (\a b -> f a :. b) Nil
 
 -- | Return elements satisfying the given predicate.
 --
@@ -147,10 +145,8 @@ filter ::
   (a -> Bool)
   -> List a
   -> List a
-filter _ Nil = Nil
-filter f (a :. as)
-  | f a       = a :. filter f as
-  | otherwise = filter f as
+filter f =
+  foldRight (\a -> if f a then (a:.) else id) Nil
 
 -- | Append two lists to a new list.
 --
@@ -168,10 +164,7 @@ filter f (a :. as)
   List a
   -> List a
   -> List a
-(++) Nil Nil = Nil
-(++) Nil as = as
-(++) as Nil = as
-(++) (a :. as) bs = a :. (as ++ bs)
+(++) = flip (foldRight (:.))
 
 infixr 5 ++
 
@@ -188,7 +181,7 @@ infixr 5 ++
 flatten ::
   List (List a)
   -> List a
-flatten = foldLeft (++) Nil
+flatten = foldRight (++) Nil
 
 -- | Map a function then flatten to a list.
 --
@@ -204,7 +197,7 @@ flatMap ::
   (a -> List b)
   -> List a
   -> List b
-flatMap f list = flatten $ map f list
+flatMap f = flatten . map f
 
 -- | Flatten a list of lists to a list (again).
 -- HOWEVER, this time use the /flatMap/ function that you just wrote.
@@ -469,7 +462,7 @@ unfoldr ::
 unfoldr f b  =
   case f b of
     Full (a, z) -> a :. unfoldr f z
-    Empty -> Nil
+    Empty       -> Nil
 
 lines ::
   Chars
@@ -504,7 +497,7 @@ listOptional _ Nil =
 listOptional f (h:.t) =
   let r = listOptional f t
   in case f h of
-       Empty -> r
+       Empty  -> r
        Full q -> q :. r
 
 any ::
@@ -615,7 +608,7 @@ reads ::
   -> Optional (a, Chars)
 reads s =
   case P.reads (hlist s) of
-    [] -> Empty
+    []         -> Empty
     ((a, q):_) -> Full (a, listh q)
 
 read ::
@@ -631,7 +624,7 @@ readHexs ::
   -> Optional (a, Chars)
 readHexs s =
   case N.readHex (hlist s) of
-    [] -> Empty
+    []         -> Empty
     ((a, q):_) -> Full (a, listh q)
 
 readHex ::
@@ -647,7 +640,7 @@ readFloats ::
   -> Optional (a, Chars)
 readFloats s =
   case N.readSigned N.readFloat (hlist s) of
-    [] -> Empty
+    []         -> Empty
     ((a, q):_) -> Full (a, listh q)
 
 readFloat ::
