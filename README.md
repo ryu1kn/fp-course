@@ -9,7 +9,7 @@ exercises in the suggested order.
 * [x] `Course.List`
 * [x] `Course.Functor`
 * [x] `Course.Applicative`
-* [ ] `Course.Monad`
+* [x] `Course.Monad`
 * [ ] `Course.FileIO`
 * [ ] `Course.State`
 * [ ] `Course.StateT`
