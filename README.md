@@ -6,7 +6,7 @@ After reading `Course.ExactlyOne` and `Course.Validation`, do the following
 exercises in the suggested order.
 
 * [x] `Course.Optional`
-* [ ] `Course.List`
+* [x] `Course.List`
 * [ ] `Course.Functor`
 * [ ] `Course.Applicative`
 * [ ] `Course.Monad`
