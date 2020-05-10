@@ -10,7 +10,7 @@ exercises in the suggested order.
 * [x] `Course.Functor`
 * [x] `Course.Applicative`
 * [x] `Course.Monad`
-* [ ] `Course.FileIO`
+* [x] `Course.FileIO`
 * [ ] `Course.State`
 * [ ] `Course.StateT`
 * [ ] `Course.Extend`

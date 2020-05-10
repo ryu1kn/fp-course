@@ -85,33 +85,28 @@ printFile ::
   FilePath
   -> Chars
   -> IO ()
-printFile path contents = do
-  putStrLn $ "============ " ++ path
-  putStrLn contents
+printFile path contents = putStrLn ("============ " ++ path) >> putStrLn contents
 
 -- Given a list of (file name and file contents), print each.
 -- Use @printFile@.
 printFiles ::
   List (FilePath, Chars)
   -> IO ()
-printFiles = void . sequence . map printFile'
-  where printFile' (path, contents) = printFile path contents
+printFiles = void . sequence . (<$>) (uncurry printFile)
 
 -- Given a file name, return (file name and file contents).
 -- Use @readFile@.
 getFile ::
   FilePath
   -> IO (FilePath, Chars)
-getFile path = do
-  contents <- readFile path
-  pure (path, contents)
+getFile = lift2 (<$>) (,) readFile
 
 -- Given a list of file names, return list of (file name and file contents).
 -- Use @getFile@.
 getFiles ::
   List FilePath
   -> IO (List (FilePath, Chars))
-getFiles = sequence . map getFile
+getFiles = sequence . (<$>) getFile
 
 -- Given a file name, read it and for each line in that file, read and print contents of each.
 -- Use @getFiles@, @lines@, and @printFiles@.
@@ -119,16 +114,17 @@ run ::
   FilePath
   -> IO ()
 run path = do
-  (_, contents) <- getFile path
+  contents <- readFile path
   files <- getFiles $ lines contents
   printFiles files
 
 -- /Tip:/ use @getArgs@ and @run@
 main ::
   IO ()
-main = do
-  (file :. _) <- getArgs
-  run file
+main = getArgs >>= \args ->
+  case args of
+    (file :. Nil) -> run file
+    _             -> putStrLn "usage: :main \"share/files.txt\""
 
 ----
 
